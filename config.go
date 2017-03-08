@@ -8,11 +8,11 @@ import (
 )
 
 type Host struct {
-	ID    string
-	Host  string
-	Admin string
-	ACLs  []ACL
-	Users []string
+	ID      string
+	Host    string
+	Account string
+	ACLs    []ACL
+	Users   []string
 }
 
 type ACL struct {
@@ -54,7 +54,8 @@ func loadHosts(cfg *ini.File, acls map[string]ACL) ([]Host, error) {
 			id := strings.Split(key.Name(), ".")[0]
 			host := new(Host)
 			host.ID = id
-			host.Admin = getKey(section, id+".admin").String()
+			host.Host = getKey(section, id+".host").String()
+			host.Account = getKey(section, id+".account").String()
 			host.Users = getKey(section, id+".users").Strings(",")
 			aclNames := getKey(section, id+".acls").Strings(",")
 			for _, name := range aclNames {
@@ -66,7 +67,7 @@ func loadHosts(cfg *ini.File, acls map[string]ACL) ([]Host, error) {
 	return hosts, nil
 }
 
-func LoadConfig(f string) (map[string]ACL, []Host, error) {
+func LoadConfig(f string) ([]Host, map[string]ACL, error) {
 	cfg, err := ini.Load(f)
 	if err != nil {
 		return nil, nil, fmt.Errorf("Could not open config file %s: %s", f, err)
@@ -79,5 +80,5 @@ func LoadConfig(f string) (map[string]ACL, []Host, error) {
 
 	hosts, err := loadHosts(cfg, acls)
 
-	return acls, hosts, nil
+	return hosts, acls, nil
 }

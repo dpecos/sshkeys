@@ -1,16 +1,22 @@
 package main
 
-import (
-	"fmt"
-)
-
 func main() {
-	acls, hosts, err := LoadConfig("config.ini")
+
+	hosts, acls, err := LoadConfig("config.ini")
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("ACLs: %v", acls)
-	fmt.Printf("Hosts: %v", hosts)
+	err = CheckKeys("./keys", hosts, acls)
+
+	if err != nil {
+		panic(err)
+	}
+
+	err = UploadKeys(hosts, acls)
+
+	if err != nil {
+		panic(err)
+	}
 }
