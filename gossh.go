@@ -1,22 +1,20 @@
 package main
 
+import (
+	"log"
+)
+
 func main() {
 
 	hosts, acls, err := LoadConfig("config.ini")
 
 	if err != nil {
-		panic(err)
-	}
-
-	err = CheckKeys("./keys", hosts, acls)
-
-	if err != nil {
-		panic(err)
+		log.Panic(err)
 	}
 
 	err = UploadKeys("./keys", hosts, acls)
 
 	if err != nil {
-		panic(err)
+		log.Fatalf("ERROR: %s\n", err)
 	}
 }
