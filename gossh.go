@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 
-	err = UploadKeys(hosts, acls)
+	err = UploadKeys("./keys", hosts, acls)
 
 	if err != nil {
 		panic(err)
