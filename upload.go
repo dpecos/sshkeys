@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -16,24 +15,8 @@ type AuthorizedKey struct {
 
 func readKeyFile(keyspath string, user string) (string, error) {
 	keyname := filepath.Join(keyspath, user+".pub")
-	file, err := os.OpenFile(keyname, os.O_RDONLY, 0444)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	var text = make([]byte, 1024)
-	for {
-		n, err := file.Read(text)
-		if err != io.EOF {
-			return "", err
-		}
-		if n == 0 {
-			break
-		}
-	}
-
-	return string(text), nil
+	contents, err := ioutil.ReadFile(keyname)
+	return string(contents), err
 }
 
 func createAuthorizedKeysFile(keysPath string, keys []AuthorizedKey) (*os.File, error) {
@@ -69,7 +52,6 @@ func putKeysInHost(keysPath string, keys []AuthorizedKey, host Host) error {
 	if err != nil {
 		return err
 	}
-	print(file.Name())
 	defer os.Remove(file.Name())
 
 	err = uploadFileToHost(file, host)
