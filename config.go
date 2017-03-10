@@ -56,10 +56,14 @@ func loadHosts(cfg *ini.File, acls map[string]ACL) ([]Host, error) {
 			host.ID = id
 			host.Host = getKey(section, id+".host").String()
 			host.Account = getKey(section, id+".account").String()
-			host.Users = getKey(section, id+".users").Strings(",")
-			aclNames := getKey(section, id+".acls").Strings(",")
-			for _, name := range aclNames {
-				host.ACLs = append(host.ACLs, acls[name])
+			if section.HasKey(id + ".users") {
+				host.Users = getKey(section, id+".users").Strings(",")
+			}
+			if section.HasKey(id + ".acls") {
+				aclNames := getKey(section, id+".acls").Strings(",")
+				for _, name := range aclNames {
+					host.ACLs = append(host.ACLs, acls[name])
+				}
 			}
 			hosts = append(hosts, *host)
 		}
