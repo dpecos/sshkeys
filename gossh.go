@@ -12,7 +12,7 @@ func main() {
 		log.Panic(err)
 	}
 
-	err = UploadKeys("./keys", hosts, acls)
+	err = UploadKeys("./id_rsa", "./keys", hosts, acls)
 
 	if err != nil {
 		log.Fatalf("ERROR: %s\n", err)
