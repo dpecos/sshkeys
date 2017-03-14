@@ -1,52 +1,16 @@
-package main
+package utils
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
-	"path/filepath"
+
+	config "github.com/dpecos/gossh/config"
 
 	scp "github.com/bramvdbogaerde/go-scp"
 	"github.com/bramvdbogaerde/go-scp/auth"
 )
 
-type AuthorizedKey struct {
-	User    string
-	Account string
-	Host    string
-}
-
-func readKeyFile(keyspath string, user string) (string, error) {
-	keyname := filepath.Join(keyspath, user+".pub")
-	contents, err := ioutil.ReadFile(keyname)
-	return string(contents), err
-}
-
-func createAuthorizedKeysFile(keysPath string, keys []AuthorizedKey) (string, error) {
-	file, err := ioutil.TempFile("", "auth")
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	for _, key := range keys {
-		log.Printf("Adding key for \"%s\" to \"%s@%s\"\n", key.User, key.Account, key.Host)
-		keyContents, err := readKeyFile(keysPath, key.User)
-		if err != nil {
-			defer os.Remove(file.Name())
-			return "", err
-		}
-		_, err = file.WriteString(keyContents + "\n")
-		if err != nil {
-			defer os.Remove(file.Name())
-			return "", err
-		}
-	}
-
-	return file.Name(), nil
-}
-
-func uploadFileToHost(privateKey string, host Host, file string, remoteFilename string) error {
+func uploadFileToHost(privateKey string, host config.Host, file string, remoteFilename string) error {
 	clientConfig, _ := auth.PrivateKey(host.Account, privateKey)
 	client := scp.NewClient(host.Host+":22", &clientConfig)
 
@@ -65,7 +29,7 @@ func uploadFileToHost(privateKey string, host Host, file string, remoteFilename 
 	return nil
 }
 
-func putKeysInHost(privateKey string, keysPath string, keys []AuthorizedKey, host Host) error {
+func putKeysInHost(privateKey string, keysPath string, keys []AuthorizedKey, host config.Host) error {
 	file, err := createAuthorizedKeysFile(keysPath, keys)
 	if err != nil {
 		return err
@@ -77,7 +41,7 @@ func putKeysInHost(privateKey string, keysPath string, keys []AuthorizedKey, hos
 	return err
 }
 
-func UploadKeys(privateKey, keysPath string, hosts []Host, acls map[string]ACL) error {
+func UploadKeys(privateKey, keysPath string, hosts []config.Host, acls map[string]config.ACL) error {
 	for _, host := range hosts {
 		var keys []AuthorizedKey
 		keysAdded := make(map[string]bool)

@@ -1,8 +1,10 @@
-package main
+package config
 
 import (
 	"fmt"
 	"strings"
+
+	"log"
 
 	ini "gopkg.in/ini.v1"
 )
@@ -38,7 +40,7 @@ func loadACLs(cfg *ini.File) (map[string]ACL, error) {
 func getKey(section *ini.Section, key string) *ini.Key {
 	val, err := section.GetKey(key)
 	if err != nil {
-		panic(fmt.Sprintf("Key %s not found", key))
+		log.Fatalf("Key %s not found", key)
 	}
 	return val
 }
