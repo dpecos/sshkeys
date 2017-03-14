@@ -16,7 +16,7 @@ func uploadFileToHost(privateKey string, host config.Host, file string, remoteFi
 
 	err := client.Connect()
 	if err != nil {
-		log.Fatal("Couldn't establisch a connection to the remote server ", err)
+		log.Fatal("Couldn't establisc a connection to the remote server: ", err)
 		return err
 	}
 	defer client.Session.Close()
